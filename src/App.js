@@ -5,6 +5,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {Fragment, useEffect} from "react";
 import {cartUi} from "./store/ui-slice";
 import Notification from "./components/UI/Notification";
+import {fetchCartDetails} from "./store/cart-actions";
 
 var isInitial=true;
 
@@ -15,9 +16,14 @@ function App() {
     const dispatch = useDispatch();
     const notification = useSelector(state => state.ui.notification)
 
+    useEffect(()=>{
+        dispatch(fetchCartDetails());
+    },[dispatch])
     useEffect(() => {
-
-
+        if (isInitial){
+            isInitial=false
+            return;
+        }
         const sendRequest = async () => {
             dispatch(cartUi.showNotification({
                 status: "pending",
@@ -39,12 +45,6 @@ function App() {
                 message: "cart loaded sussecfull"
             }));
         }
-
-        if (isInitial){
-            isInitial=false
-            return;
-        }
-
         sendRequest().catch(() => {
             dispatch(cartUi.showNotification({
                 status: "error",
@@ -52,8 +52,6 @@ function App() {
                 message: "error loading the cart data"
             }));
         })
-
-
 
     }, [cart,dispatch])
 
